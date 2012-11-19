@@ -9,8 +9,6 @@
 
 namespace li3_features\util;
 
-use lithium\core\Environment;
-
 /**
  * `Features` provides a way to selectively release features.
  *
@@ -30,7 +28,9 @@ class Features extends \lithium\core\StaticObject {
 	 *
 	 * @var array Associative array of class names & their namespaces.
 	 */
-	protected static $_classes = array();
+  protected static $_classes = array(
+    'environment' => 'lithium\core\Environment'
+  );
 
   /**
    * Add feature detectors to your app in `config/bootstrap/features.php`
@@ -89,7 +89,8 @@ class Features extends \lithium\core\StaticObject {
       return false;
     }
     if (is_array($detector)) {
-      $env = Environment::get();
+      $env = static::$_classes['environment'];
+      $env = $env::get();
       $detector = $detector[$env];
     }
     if (is_bool($detector)) {
