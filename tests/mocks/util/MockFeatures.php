@@ -15,8 +15,8 @@ class MockFeatures extends \li3_features\util\Features {
 	 *
 	 * @var array Associative array of class names & their namespaces.
 	 */
-  protected static $_classes = array(
-    'environment' => 'li3_features\tests\mocks\core\MockEnvironment'
-  );
+	protected static $_classes = array(
+		'environment' => 'li3_features\tests\mocks\core\MockEnvironment'
+	);
 }
 
