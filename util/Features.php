@@ -9,6 +9,8 @@
 
 namespace li3_features\util;
 
+use lithium\action\Dispatcher;
+
 /**
  * `Features` provides a way to selectively release features.
  *
@@ -16,8 +18,8 @@ namespace li3_features\util;
 class Features extends \lithium\core\StaticObject {
 
 	/**
-	 * A collection of the configurations stored through `Features::add()`. Each 
-   * configuration holds a set of named features and their detectors.
+	 * A collection of the configurations stored through `Features::add()`. Each
+	 * configuration holds a set of named features and their detectors.
 	 *
 	 * @var object `Collection` of available features.
 	 */
@@ -32,6 +34,28 @@ class Features extends \lithium\core\StaticObject {
 		'environment' => 'lithium\core\Environment'
 	);
 
+	/**
+	 * The current request object, to be passed to closure detectors.
+	 *
+	 * @var object `Request` object representing the current request.
+	 * @todo I don't like that this is public. Is there some other way to allow 
+	 * the closure to set it?
+	 */
+	public static $_request = null;
+
+	public static function __init() {
+		/**
+		 * Capture the current request
+		 */
+		$class = __CLASS__;
+		Dispatcher::applyFilter('_callable', function($self, $params, $chain) use ($class) {
+			$class::$_request = $params['request'];
+
+			return $chain->next($self, $params, $chain);
+		});
+
+
+	}
 	/**
 	 * Add feature detectors to your app in `config/bootstrap/features.php`
 	 *
@@ -84,6 +108,7 @@ class Features extends \lithium\core\StaticObject {
 	public static function check($name, array $params = array(), array $options = array()) {
 		$defaults = array();
 		$params += $defaults;
+		$params['request'] = static::$_request;
 
 		if (($detector = static::_detector($name)) === null) {
 			return false;
@@ -117,7 +142,5 @@ class Features extends \lithium\core\StaticObject {
 		$detector = static::$_features[$name];
 		return $detector;
 	}
-
 }
-
 ?>

@@ -12,6 +12,8 @@ namespace li3_features\tests\cases\util;
 use li3_features\util\Features;
 use li3_features\tests\mocks\util\MockFeatures;
 use li3_features\tests\mocks\core\MockEnvironment;
+use lithium\net\http\Request;
+use lithium\core\Environment;
 
 class FeaturesTest extends \lithium\test\Unit {
 
@@ -103,6 +105,19 @@ class FeaturesTest extends \lithium\test\Unit {
 		MockEnvironment::set('staging');
 		$result = MockFeatures::check('feature_env_closure');
 		$this->assertFalse($result);
+	}
+
+	public function testCheckRequest() {
+		$request = new Request();
+		$request->feature = true;
+		Features::$_request = $request;
+
+		Features::add('feature_request', function($params) {
+			return $params['request']->feature;
+		});
+
+		$result = Features::check('feature_request');
+		$this->assertTrue($result);
 	}
 }
 
