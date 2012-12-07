@@ -62,16 +62,34 @@ class Features extends \lithium\core\StaticObject {
 	}
 
 	/**
-	 * Add feature detectors to your app in `config/bootstrap/features.php`
+	 * Add feature detectors to your app, for example in `config/bootstrap/features.php`
 	 *
-	 * For example:
+	 * Some examples:
 	 * {{{
 	 * Features::add('feature_name', true);
 	 * }}}
 	 *
-	 * or
+	 * or using a closure
 	 *
-	 * @todo add other examples
+	 * {{{
+	 * Features::add('new_ui', function() {
+	 *   // Logic here to decide if the feature should be enabled.
+	 *   // Return true to enable and false to disable.
+	 * });
+	 * }}}
+	 *
+	 * or sensitive to the environment
+	 *
+	 * {{{
+	 * // `config/bootstrap/features.php`
+	 * Features::add('new_ui', array(
+	 *   'production' => false,
+	 *   'development' => true,
+	 *   'staging' => function() {
+	 *     // Logic here to decide if the feature should be enabled.
+	 *   }
+	 * ));
+	 * }}}
 	 *
 	 * @param string $name The name by which this feature is referenced.
 	 * @param mixed $detector The detector that will determine whether the feature 
@@ -86,9 +104,6 @@ class Features extends \lithium\core\StaticObject {
 	 *          detector is one of the above types.
 	 * @return mixed Returns the stored detector.
 	 *
-	 * @todo should we be sensitive to the environment here rather than in 
-	 * `check()`, storing only the detector. Or should we do that in `_detector` 
-	 * instead?
 	 */
 	public static function add($name, $detector) {
 		return static::$_features[$name] = $detector;
@@ -99,7 +114,7 @@ class Features extends \lithium\core\StaticObject {
 	 * Features that have not been defined will always be false.
 	 *
 	 * @see lithium\core\Environment
-	 * @param string $name The name of the `Features` to check.
+	 * @param string $name The name of the feature to check.
 	 * @param array $params An array of parameters to be passed to the detector.
 	 *
 	 * @return Boolean true if the feature should be enabled for this request and 
@@ -110,7 +125,7 @@ class Features extends \lithium\core\StaticObject {
 	 * @todo consider whether to log missing features.
 	 * @todo throw an exception if the environment doesn't exist
 	 */
-	public static function check($name, array $params = array(), array $options = array()) {
+	public static function check($name, array $params = array()) {
 		$defaults = array();
 		$params += $defaults;
 		$params['request'] = static::$_request;
