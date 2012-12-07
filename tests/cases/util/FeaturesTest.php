@@ -110,7 +110,7 @@ class FeaturesTest extends \lithium\test\Unit {
 	public function testCheckRequest() {
 		$request = new Request();
 		$request->feature = true;
-		Features::$_request = $request;
+		Features::setRequest($request);
 
 		Features::add('feature_request', function($params) {
 			return $params['request']->feature;

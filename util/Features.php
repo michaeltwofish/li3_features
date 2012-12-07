@@ -38,24 +38,29 @@ class Features extends \lithium\core\StaticObject {
 	 * The current request object, to be passed to closure detectors.
 	 *
 	 * @var object `Request` object representing the current request.
-	 * @todo I don't like that this is public. Is there some other way to allow 
-	 * the closure to set it?
 	 */
-	public static $_request = null;
+	protected static $_request = null;
 
 	public static function __init() {
 		/**
 		 * Capture the current request
 		 */
-		$class = __CLASS__;
-		Dispatcher::applyFilter('_callable', function($self, $params, $chain) use ($class) {
-			$class::$_request = $params['request'];
-
+		Dispatcher::applyFilter('_callable', function($self, $params, $chain) {
+			Features::setRequest($params['request']);
 			return $chain->next($self, $params, $chain);
 		});
 
-
 	}
+
+	/**
+	 * Store the current request object, to be passed to closure detectors.
+	 *
+	 * @param object `Request` object representing the current request.
+	 */
+	public static function setRequest($request) {
+		static::$_request = $request;
+	}
+
 	/**
 	 * Add feature detectors to your app in `config/bootstrap/features.php`
 	 *
