@@ -18,5 +18,9 @@ class MockFeatures extends \li3_features\util\Features {
 	protected static $_classes = array(
 		'environment' => 'li3_features\tests\mocks\core\MockEnvironment'
 	);
+
+	public static function clearFeatures() {
+		static::$_features = array();
+	}
 }
 
