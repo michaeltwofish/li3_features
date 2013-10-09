@@ -19,43 +19,45 @@ class FeaturesTest extends \lithium\test\Unit {
 
 	public function setUp() {}
 
-	public function tearDown() {}
+		public function tearDown() {
+			MockFeatures::clearFeatures();
+		}
 
 	public function testCheckBool() {
-		Features::add('feature_true', true);
-		Features::add('feature_false', false);
+		MockFeatures::add('feature_true', true);
+		MockFeatures::add('feature_false', false);
 
-		$result = Features::check('feature_true');
+		$result = MockFeatures::check('feature_true');
 		$this->assertTrue($result);
 
-		$result = Features::check('feature_false');
+		$result = MockFeatures::check('feature_false');
 		$this->assertFalse($result);
 	}
 
 	public function testCheckClosureBool() {
-		Features::add('feature_closure_true', function($params) {
-      return true;
-    });
-		Features::add('feature_closure_false', function($params) {
-      return false;
-    });
+		MockFeatures::add('feature_closure_true', function($params) {
+			return true;
+		});
+		MockFeatures::add('feature_closure_false', function($params) {
+			return false;
+		});
 
-		$result = Features::check('feature_closure_true');
+		$result = MockFeatures::check('feature_closure_true');
 		$this->assertTrue($result);
 
-		$result = Features::check('feature_closure_false');
+		$result = MockFeatures::check('feature_closure_false');
 		$this->assertFalse($result);
 	}
 
 	public function testCheckClosureParams() {
-		Features::add('feature_closure', function($params) {
-      return $params['feature'];
-    });
+		MockFeatures::add('feature_closure', function($params) {
+			return $params['feature'];
+		});
 
-		$result = Features::check('feature_closure', array('feature' => true));
+		$result = MockFeatures::check('feature_closure', array('feature' => true));
 		$this->assertTrue($result);
 
-		$result = Features::check('feature_closure', array('feature' => false));
+		$result = MockFeatures::check('feature_closure', array('feature' => false));
 		$this->assertFalse($result);
 	}
 
@@ -110,14 +112,40 @@ class FeaturesTest extends \lithium\test\Unit {
 	public function testCheckRequest() {
 		$request = new Request();
 		$request->feature = true;
-		Features::setRequest($request);
+		MockFeatures::setRequest($request);
 
-		Features::add('feature_request', function($params) {
+		MockFeatures::add('feature_request', function($params) {
 			return $params['request']->feature;
 		});
 
-		$result = Features::check('feature_request');
+		$result = MockFeatures::check('feature_request');
 		$this->assertTrue($result);
+	}
+
+	public function testExport() {
+		$testable = array();
+		$this->assertEqual($testable, MockFeatures::export(array('true' => 123, 'false' => 123)));
+		MockFeatures::add('closureTest', function($params) {
+			return !empty($params['true']);
+		});
+		$testable['closureTest'] = true;
+		$this->assertEqual($testable, MockFeatures::export(array('true' => 123, 'false' => 123)));
+		$testable['closureTest'] = false;
+		$this->assertEqual($testable, MockFeatures::export(array('false' => 123)));
+
+		MockFeatures::add('trueTest', true);
+		$testable['trueTest'] = true;
+		$testable['closureTest'] = true;
+		$this->assertEqual($testable, MockFeatures::export(array('true' => 123, 'false' => 123)));
+		$testable['closureTest'] = false;
+		$this->assertEqual($testable, MockFeatures::export(array('false' => 123)));
+
+		MockFeatures::add('falseTest', false);
+		$testable['falseTest'] = false;
+		$testable['closureTest'] = true;
+		$this->assertEqual($testable, MockFeatures::export(array('true' => 123, 'false' => 123)));
+		$testable['closureTest'] = false;
+		$this->assertEqual($testable, MockFeatures::export(array('false' => 123)));
 	}
 }
 

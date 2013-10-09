@@ -92,15 +92,15 @@ class Features extends \lithium\core\StaticObject {
 	 * }}}
 	 *
 	 * @param string $name The name by which this feature is referenced.
-	 * @param mixed $detector The detector that will determine whether the feature 
+	 * @param mixed $detector The detector that will determine whether the feature
 	 *        is enabled. The detector can be one of the following types:
-	 *        - _Boolean_: The named feature is simple enabled or disabled for all 
+	 *        - _Boolean_: The named feature is simple enabled or disabled for all
 	 *          environments.
-	 *        - _closure_: The closure is called to determine if the feature is 
-	 *          enabled for the current request. For example, this could be used to enable a 
-	 *          feature for a random user subset or allow beta testers to gain early 
+	 *        - _closure_: The closure is called to determine if the feature is
+	 *          enabled for the current request. For example, this could be used to enable a
+	 *          feature for a random user subset or allow beta testers to gain early
 	 *          access to a feature.
-	 *        - _array_: An array of environment and detector pairs, where the 
+	 *        - _array_: An array of environment and detector pairs, where the
 	 *          detector is one of the above types.
 	 * @return mixed Returns the stored detector.
 	 *
@@ -110,17 +110,17 @@ class Features extends \lithium\core\StaticObject {
 	}
 
 	/**
-	 * Performs a check of the specified feature against stored features. 
+	 * Performs a check of the specified feature against stored features.
 	 * Features that have not been defined will always be false.
 	 *
 	 * @see lithium\core\Environment
 	 * @param string $name The name of the feature to check.
 	 * @param array $params An array of parameters to be passed to the detector.
 	 *
-	 * @return Boolean true if the feature should be enabled for this request and 
+	 * @return Boolean true if the feature should be enabled for this request and
 	 * false otherwise.
 	 *
-	 * @todo consider if it's worth passing in closures to execute based on the 
+	 * @todo consider if it's worth passing in closures to execute based on the
 	 * truthiness or falsiness of the check.
 	 * @todo consider whether to log missing features.
 	 * @todo throw an exception if the environment doesn't exist
@@ -162,5 +162,26 @@ class Features extends \lithium\core\StaticObject {
 		$detector = static::$_features[$name];
 		return $detector;
 	}
+
+
+	/**
+	 * Exports an array of features and whether they are currently enabled or
+	 * disabled
+	 *
+	 * @param array $params An array of parameters that will be passed to each
+	 * detector
+	 * @return array Returns a list of booleans keyed by feature names
+	 */
+	public static function export(array $params = array()) {
+		$returnable = array();
+		if (empty(static::$_features)) {
+			return $returnable;
+		}
+		foreach (array_keys(static::$_features) as $name) {
+			$returnable[$name] = static::check($name, $params);
+		}
+		return $returnable;
+	}
+
 }
 ?>
