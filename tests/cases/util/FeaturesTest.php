@@ -147,6 +147,35 @@ class FeaturesTest extends \lithium\test\Unit {
 		$testable['closureTest'] = false;
 		$this->assertEqual($testable, MockFeatures::export(array('false' => 123)));
 	}
+
+	public function testDefault() {
+		$testable = array();
+		$this->assertEqual(false, MockFeatures::check('testFeature'));
+		$this->assertEqual(false, MockFeatures::check('testFeature1'));
+		$this->assertEqual(false, MockFeatures::check('testFeature2'));
+
+		MockFeatures::add('__default', function($params) {
+			if (
+				!empty($params['name']) &&
+				in_array($params['name'], array('testFeature1', 'testFeature'))
+			) {
+				return true;
+			}
+			return false;
+		});
+
+		$this->assertEqual(true, MockFeatures::check('testFeature'));
+		$this->assertEqual(true, MockFeatures::check('testFeature1'));
+		$this->assertEqual(false, MockFeatures::check('testFeature2'));
+
+		MockFeatures::add('testFeature', function($params) {
+			return false;
+		});
+
+		$this->assertEqual(false, MockFeatures::check('testFeature'));
+		$this->assertEqual(true, MockFeatures::check('testFeature1'));
+		$this->assertEqual(false, MockFeatures::check('testFeature2'));
+	}
 }
 
 ?>

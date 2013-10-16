@@ -126,12 +126,14 @@ class Features extends \lithium\core\StaticObject {
 	 * @todo throw an exception if the environment doesn't exist
 	 */
 	public static function check($name, array $params = array()) {
-		$defaults = array();
+		$defaults = compact('name');
 		$params += $defaults;
 		$params['request'] = static::$_request;
 
 		if (($detector = static::_detector($name)) === null) {
-			return false;
+			if (($detector = static::_detector("__default")) === null) {
+				return false;
+			}
 		}
 		if (is_array($detector)) {
 			$env = static::$_classes['environment'];
