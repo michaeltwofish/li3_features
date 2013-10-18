@@ -1,3 +1,5 @@
+## This library is now maintained at https://github.com/smergler/li3_features
+
 # Feature toggle library for the Lithium framework.
 
 [Feature toggling](http://martinfowler.com/bliki/FeatureToggle.html) lets you
@@ -66,6 +68,6 @@ passing an array of environment and detector pairs.
 
 The original author of this library.
 
-Github: [michaeltwofish](https://github.com/michaeltwofish)
+GitHub: [michaeltwofish](https://github.com/michaeltwofish)
 
 Website: [Twofish Creative](http://www.twofishcreative.com/michael/blog)
